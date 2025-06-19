@@ -1,7 +1,7 @@
 {
-    "name": "@snjyor/binance-mcp",
-    "version": "1.0.1",
-    "description": "Binance Cryptocurrency Market Data MCP Service",
+    "name": "@snjyor/binance-mcp-enhanced",
+    "version": "1.0.2-enhanced",
+    "description": "Binance Cryptocurrency Market Data MCP Service - Enhanced with Technical Analysis",
     "main": "dist/index.js",
     "bin": "dist/index.js",
     "type": "module",
@@ -14,9 +14,13 @@
         "dev": "node --loader ts-node/esm src/index.ts",
         "demo": "node --loader ts-node/esm src/demo.ts",
         "build": "tsc",
+        "build:enhanced": "docker build -f Dockerfile.enhanced -t binance-mcp-enhanced .",
         "prepublishOnly": "npm run build",
         "start": "node dist/index.js",
-        "inspector": "npx @modelcontextprotocol/inspector node dist/index.js"
+        "inspector": "npx @modelcontextprotocol/inspector node dist/index.js",
+        "audit": "npm audit",
+        "audit:fix": "npm audit fix",
+        "security:check": "npm audit && docker scan binance-mcp-security-test"
     },
     "keywords": [
         "cryptocurrency",
@@ -33,15 +37,17 @@
     "license": "MIT",
     "dependencies": {
         "@modelcontextprotocol/sdk": "^1.9.0",
-        "axios": "^1.6.7",
-        "zod": "^3.22.4"
+        "axios": "^1.7.7",
+        "zod": "^3.23.8",
+        "technicalindicators": "^3.1.0"
     },
     "devDependencies": {
         "ts-node": "^10.9.2",
-        "typescript": "^5.3.3"
+        "typescript": "^5.3.3",
+        "@types/node": "^20.0.0"
     },
     "engines": {
-        "node": ">=18"
+        "node": ">=20"
     },
     "repository": {
         "type": "git",

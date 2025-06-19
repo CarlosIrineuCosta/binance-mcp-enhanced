@@ -1,0 +1,16 @@
+Binance MCP Enhanced
+Copyright 2024 Your Name
+
+This product includes software developed by snjyor
+Original repository: https://github.com/snjyor/binance-mcp
+Licensed under the Apache License, Version 2.0
+
+Modifications and enhancements:
+- Added technical analysis indicators (SMA, EMA, RSI, MACD, Bollinger Bands, ATR, VWAP)
+- Added market analysis tools and trend detection
+- Added multi-symbol comparison functionality
+- Enhanced security with input validation and error sanitization
+- Added support for Binance Testnet
+- Upgraded dependencies to fix security vulnerabilities
+
+All modifications maintain backward compatibility with the original API.
