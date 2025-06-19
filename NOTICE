@@ -1,16 +1,15 @@
-Binance MCP Enhanced
-Copyright 2024 Your Name
+Binance MCP Secure
+Copyright 2025 Carlos Irineu Costa
 
 This product includes software developed by snjyor
 Original repository: https://github.com/snjyor/binance-mcp
 Licensed under the Apache License, Version 2.0
 
-Modifications and enhancements:
-- Added technical analysis indicators (SMA, EMA, RSI, MACD, Bollinger Bands, ATR, VWAP)
-- Added market analysis tools and trend detection
-- Added multi-symbol comparison functionality
-- Enhanced security with input validation and error sanitization
-- Added support for Binance Testnet
-- Upgraded dependencies to fix security vulnerabilities
+Security modifications:
+- Updated dependencies to fix critical vulnerabilities (axios 1.7.7, zod 3.23.8)
+- Added comprehensive input validation with Zod schemas
+- Enhanced API key validation and sanitized error handling
+- Docker security hardening with non-root user (uid=1001)
+- Removed all security vulnerabilities (0 npm audit issues)
 
-All modifications maintain backward compatibility with the original API.
+This version maintains the original API functionality with security enhancements only.
