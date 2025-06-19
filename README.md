@@ -1,9 +1,9 @@
-# Binance MCP Enhanced
+# Binance MCP Secure
 
-> **Enhanced version** of [binance-mcp](https://github.com/snjyor/binance-mcp) by [@snjyor](https://github.com/snjyor)  
+> **Security-hardened version** of [binance-mcp](https://github.com/snjyor/binance-mcp) by [@snjyor](https://github.com/snjyor)  
 > Original work licensed under Apache 2.0 License
 
-A secure and enhanced implementation of the Binance MCP server with security fixes and comprehensive API coverage.
+A secure implementation of the Binance MCP server with critical security vulnerabilities fixed while maintaining all original functionality.
 
 ## Security Enhancements
 
@@ -22,11 +22,11 @@ See [SECURITY_REPORT.md](SECURITY_REPORT.md) for complete vulnerability analysis
 ### Docker (Recommended)
 
 ```bash
-# Build enhanced image
-docker build -t binance-mcp-enhanced .
+# Build secure image
+docker build -t binance-mcp-secure .
 
 # Run container
-docker run -i --rm binance-mcp-enhanced
+docker run -i --rm binance-mcp-secure
 ```
 
 ### Local Installation
@@ -67,9 +67,9 @@ All 12 original Binance MCP tools with security enhancements:
 
 ```json
 {
-  "binance-enhanced": {
+  "binance-secure": {
     "command": "docker",
-    "args": ["run", "-i", "--rm", "binance-mcp-enhanced"]
+    "args": ["run", "-i", "--rm", "binance-mcp-secure"]
   }
 }
 ```
@@ -88,7 +88,7 @@ export BINANCE_API_KEY="your_api_key_here"
 npm audit
 
 # Check Docker user
-docker run --rm binance-mcp-enhanced id
+docker run --rm binance-mcp-secure id
 # Should output: uid=1001(appuser) gid=1001(appgroup)
 ```
 
@@ -96,12 +96,12 @@ docker run --rm binance-mcp-enhanced id
 
 **Original Work**: [binance-mcp](https://github.com/snjyor/binance-mcp) by [@snjyor](https://github.com/snjyor)  
 **License**: Apache 2.0 License (maintained)  
-**Enhancements**: Security fixes and comprehensive API coverage
+**Security Enhancements**: Critical vulnerability fixes and hardening
 
-This enhanced version maintains full API compatibility while addressing all identified security issues and providing complete Binance API coverage.
+This secure version maintains full API compatibility while addressing all identified security issues. Contains all 12 original Binance MCP tools with comprehensive security hardening.
 
 See [LICENSE](LICENSE) and [NOTICE](NOTICE) files for complete attribution details.
 
 ## Contributing
 
-This is an enhanced fork. For the original project, contribute to [@snjyor's repository](https://github.com/snjyor/binance-mcp).
+This is a security-focused fork. For the original project, contribute to [@snjyor's repository](https://github.com/snjyor/binance-mcp).

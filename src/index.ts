@@ -473,9 +473,9 @@ function registerTools(server: McpServer) {
 
 async function main() {
     const server = new McpServer({
-        name: "binance-mcp-enhanced",
+        name: "binance-mcp-secure",
         version: "1.0.2",
-        description: "Binance Cryptocurrency Market Data MCP Service (Enhanced with Security Fixes)"
+        description: "Binance Cryptocurrency Market Data MCP Service (Security Hardened)"
     });
 
     registerTools(server);
