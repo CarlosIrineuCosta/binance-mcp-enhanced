@@ -1,128 +1,48 @@
-# Binance Cryptocurrency MCP
-[![smithery badge](https://smithery.ai/badge/@snjyor/binance-mcp-data)](https://smithery.ai/server/@snjyor/binance-mcp-data)
+# Binance MCP Enhanced - Technical Analysis Edition
 
-<a href="https://glama.ai/mcp/servers/@snjyor/binance-mcp">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/@snjyor/binance-mcp/badge" alt="Binance Cryptocurrency MCP server" />
-</a>
+> **Enhanced fork** of [binance-mcp](https://github.com/snjyor/binance-mcp) by [@snjyor](https://github.com/snjyor)  
+> Original work licensed under Apache 2.0 License
 
-[Model Context Protocol](https://modelcontextprotocol.io) service for accessing Binance cryptocurrency market data.
+A powerful cryptocurrency analysis MCP server that adds advanced technical analysis capabilities to the original Binance MCP implementation.
 
-## Overview
+## What's New
 
-This MCP service allows AI agents (such as Claude, Cursor, Windsurf, etc.) to execute Binance API calls and obtain real-time data from the cryptocurrency market, including prices, candlestick charts, order books, and more.
+### Technical Indicators
+- **Moving Averages**: SMA, EMA with customizable periods
+- **Momentum**: RSI, MACD for trend strength analysis
+- **Volatility**: Bollinger Bands, ATR for risk assessment
+- **Volume**: VWAP for institutional trading levels
 
-**Purpose**
-You can directly ask AI about the latest cryptocurrency prices, trading volume, price trends, and other information, without having to check the Binance website or use other tools.
+### Market Analysis
+- **Trend Detection**: Automatic bullish/bearish/neutral classification
+- **Support & Resistance**: Dynamic level identification
+- **Price Statistics**: Returns, volatility, Sharpe ratio calculations
+- **Market Conditions**: Overbought/oversold detection
 
-**Available Information**
+### Multi-Symbol Tools
+- **Performance Comparison**: Compare up to 5 symbols
+- **Correlation Analysis**: Find related trading pairs
+- **Volatility Ranking**: Identify high/low volatility assets
 
-Through this MCP service, you can obtain the following information:
+### Security Enhancements
+- Updated all dependencies to latest secure versions
+- Non-root Docker container execution
+- Comprehensive input validation
+- Sanitized error messages
 
-- Current price information - Get real-time prices for specified cryptocurrencies
-- Order book data - View buy and sell order depth
-- Candlestick chart data - Obtain candlestick data for different time periods
-- 24-hour price changes - View price changes within 24 hours
-- Trading history - View recent trading records
-- Price statistics - Get price statistics for various time windows
+## Installation
 
-## Available Tools
-
-| Tool                       | Description                                    |
-| -------------------------- | ----------------------------------------------- |
-| `get_price`                | Get current price for specified cryptocurrency  |
-| `get_order_book`           | Get order book data                            |
-| `get_recent_trades`        | Get list of recent trades                      |
-| `get_historical_trades`    | Get historical trade data                      |
-| `get_aggregate_trades`     | Get list of aggregate trades                   |
-| `get_klines`               | Get K-line/candlestick data                    |
-| `get_ui_klines`            | Get UI-optimized K-line data                   |
-| `get_avg_price`            | Get current average price                      |
-| `get_24hr_ticker`          | Get 24-hour price change statistics            |
-| `get_trading_day_ticker`   | Get trading day market information             |
-| `get_book_ticker`          | Get order book ticker                          |
-| `get_rolling_window_ticker` | Get rolling window price change statistics    |
-
-## Using in Cursor
-
-**Global Installation**
-
-Use npx to run the MCP service:
+### Docker (Recommended)
 
 ```bash
-npx -y @snjyor/binance-mcp@latest
+# Build the enhanced image
+docker build -t binance-mcp-enhanced .
+
+# Run the container
+docker run -i --rm binance-mcp-enhanced
 ```
 
-In Cursor IDE:
-
-1. Go to `Cursor Settings` > `MCP`
-2. Click `+ Add New MCP Service`
-3. Fill in the form:
-   - Name: `binance`
-   - Type: `command`
-   - Command: `npx -y @snjyor/binance-mcp@latest`
-
-**Project Installation**
-
-Add a `.cursor/mcp.json` file to your project:
-
-```json
-{
-  "mcpServers": {
-    "binance": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@snjyor/binance-mcp@latest"
-      ]
-    }
-  }
-}
-```
-
-**Usage**
-
-After configuration, the Binance market data tools will be automatically available to Cursor AI agents:
-
-1. The tool will be listed under `Available Tools` in the MCP settings
-2. Agents will automatically use it when relevant
-3. You can explicitly ask agents to use these tools
-
-## Using in Other MCP-Compatible Environments
-
-```json
-{
-  "mcpServers": {
-    "binance": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@snjyor/binance-mcp@latest"
-      ]
-    }
-  }
-}
-```
-
-## Usage Examples
-
-Here are some usage examples:
-
-**Query Bitcoin Price**
-```
-Please tell me the current price of Bitcoin
-```
-
-**View Ethereum's 24-hour Price Movement**
-```
-How has Ethereum's price changed in the past 24 hours?
-```
-
-**Get BNB's K-line Data**
-```
-Show me the daily K-line data for BNB over the last 5 days
-```
-
-## Development
+### Local Installation
 
 ```bash
 # Install dependencies
@@ -131,27 +51,93 @@ npm install
 # Build
 npm run build
 
-# Local testing
-npm run start
+# Run
+npm start
 ```
 
-## Debugging Server
+## Configuration
 
-To debug your server, you can use [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
+### Claude Desktop
 
-First build the server
+Add to your `claude_desktop_config.json`:
 
-```
-npm run build
-```
-
-Run the following command in terminal:
-
-```
-# Start MCP Inspector and server
-npx @modelcontextprotocol/inspector node dist/index.js
+```json
+{
+  "binance-enhanced": {
+    "command": "docker",
+    "args": ["run", "-i", "--rm", "binance-mcp-enhanced"]
+  }
+}
 ```
 
-## License
+### Testnet Mode
 
-[Apache 2.0](LICENSE) 
+For paper trading and testing:
+
+```json
+{
+  "binance-testnet": {
+    "command": "docker",
+    "args": [
+      "run", "-i", "--rm",
+      "-e", "BINANCE_TESTNET=true",
+      "binance-mcp-enhanced"
+    ]
+  }
+}
+```
+
+## Enhanced Tools Usage
+
+### Calculate Technical Indicators
+
+```
+Calculate indicators for BTCUSDT on 1h timeframe:
+- Indicators: ["sma", "ema", "rsi", "macd"]
+- Period: 20
+```
+
+Response includes current values and signals (overbought/oversold, bullish/bearish).
+
+### Analyze Market
+
+```
+Analyze BTCUSDT market on 4h timeframe with support/resistance levels
+```
+
+Provides comprehensive market analysis including trend, statistics, and key levels.
+
+### Compare Symbols
+
+```
+Compare performance of ["BTCUSDT", "ETHUSDT", "BNBUSDT"] on daily timeframe
+```
+
+Returns comparative metrics and rankings.
+
+## Original Features
+
+All original features from [@snjyor's binance-mcp](https://github.com/snjyor/binance-mcp) remain available:
+
+- Real-time price data
+- Order book information
+- Historical trades
+- K-line/candlestick data
+- 24hr statistics
+- Exchange information
+- Symbol price ticker
+- And more...
+
+## Attribution & License
+
+**Original Work**: [binance-mcp](https://github.com/snjyor/binance-mcp) by [@snjyor](https://github.com/snjyor)  
+**License**: Apache 2.0 License (maintained)  
+**Enhancements**: Technical analysis capabilities and security improvements  
+
+This enhanced version maintains full compatibility with the original API while adding powerful analysis tools for cryptocurrency trading.
+
+See [LICENSE](LICENSE) and [NOTICE](NOTICE) files for complete attribution details.
+
+## Contributing
+
+This is a personal enhancement fork. For the original project, please contribute to [@snjyor's repository](https://github.com/snjyor/binance-mcp).

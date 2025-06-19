@@ -4,24 +4,24 @@ An enhanced version of the [original binance-mcp](https://github.com/snjyor/bina
 
 ## New Features
 
-### 🎯 Technical Indicators
+### Technical Indicators
 - **Moving Averages**: SMA, EMA with customizable periods
 - **Momentum**: RSI, MACD for trend strength analysis
 - **Volatility**: Bollinger Bands, ATR for risk assessment
 - **Volume**: VWAP for institutional trading levels
 
-### 📊 Market Analysis
+### Market Analysis
 - **Trend Detection**: Automatic bullish/bearish/neutral classification
 - **Support & Resistance**: Dynamic level identification
 - **Price Statistics**: Returns, volatility, Sharpe ratio calculations
 - **Market Conditions**: Overbought/oversold detection
 
-### 🔄 Multi-Symbol Tools
+### Multi-Symbol Tools
 - **Performance Comparison**: Compare up to 5 symbols
 - **Correlation Analysis**: Find related trading pairs
 - **Volatility Ranking**: Identify high/low volatility assets
 
-### 🔒 Security Enhancements
+### Security Enhancements
 - Updated all dependencies to latest secure versions
 - Non-root Docker container execution
 - Comprehensive input validation
