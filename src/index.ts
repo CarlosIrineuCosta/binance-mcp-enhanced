@@ -90,35 +90,93 @@ function registerOriginalTools(server: McpServer) {
         }
     );
 
-    // Price Ticker
+    // Recent Trades
     server.tool(
-        "get_price",
+        "get_recent_trades",
         {
-            symbol: symbolSchema.optional().describe("Trading pair symbol, e.g. BTCUSDT"),
-            symbols: z.array(symbolSchema).optional().describe("Array of multiple trading pair symbols")
+            symbol: symbolSchema.describe("Trading pair symbol, e.g. BTCUSDT"),
+            limit: limitSchema.max(1000).optional().describe("Number of trades to return, default 500, max 1000")
         },
-        async (args: { symbol?: string; symbols?: string[] }) => {
+        async (args: { symbol: string; limit?: number }) => {
             try {
-                if (args.symbol && args.symbols) {
-                    throw new Error("Provide either symbol or symbols, not both");
-                }
-                
-                let params = {};
-                if (args.symbol) {
-                    params = { symbol: args.symbol };
-                } else if (args.symbols) {
-                    params = { symbols: JSON.stringify(args.symbols) };
-                }
-
-                const response = await axiosInstance.get(`/api/v3/ticker/price`, {
-                    params
+                const response = await axiosInstance.get(`/api/v3/trades`, {
+                    params: {
+                        symbol: args.symbol,
+                        limit: args.limit || 500
+                    }
                 });
                 return {
                     content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
                 };
             } catch (error: any) {
                 return {
-                    content: [{ type: "text", text: `Failed to get price ticker: ${sanitizeError(error)}` }],
+                    content: [{ type: "text", text: `Failed to get recent trades: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Historical Trades
+    server.tool(
+        "get_historical_trades",
+        {
+            symbol: symbolSchema.describe("Trading pair symbol, e.g. BTCUSDT"),
+            limit: limitSchema.max(1000).optional().describe("Number of trades to return, default 500, max 1000"),
+            fromId: z.number().optional().describe("Trade ID to start from")
+        },
+        async (args: { symbol: string; limit?: number; fromId?: number }) => {
+            try {
+                const apiKey = validateApiKey();
+                const response = await axiosInstance.get(`/api/v3/historicalTrades`, {
+                    params: {
+                        symbol: args.symbol,
+                        limit: args.limit || 500,
+                        fromId: args.fromId
+                    },
+                    headers: {
+                        "X-MBX-APIKEY": apiKey
+                    }
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get historical trades: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Aggregate Trades
+    server.tool(
+        "get_aggregate_trades",
+        {
+            symbol: symbolSchema.describe("Trading pair symbol, e.g. BTCUSDT"),
+            fromId: z.number().optional().describe("Aggregate trade ID to start from"),
+            startTime: timestampSchema.optional().describe("Start timestamp (milliseconds)"),
+            endTime: timestampSchema.optional().describe("End timestamp (milliseconds)"),
+            limit: limitSchema.max(1000).optional().describe("Number of aggregate trades to return, default 500, max 1000")
+        },
+        async (args: { symbol: string; fromId?: number; startTime?: number; endTime?: number; limit?: number }) => {
+            try {
+                const response = await axiosInstance.get(`/api/v3/aggTrades`, {
+                    params: {
+                        symbol: args.symbol,
+                        fromId: args.fromId,
+                        startTime: args.startTime,
+                        endTime: args.endTime,
+                        limit: args.limit || 500
+                    }
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get aggregate trades: ${sanitizeError(error)}` }],
                     isError: true
                 };
             }
@@ -155,6 +213,253 @@ function registerOriginalTools(server: McpServer) {
             } catch (error: any) {
                 return {
                     content: [{ type: "text", text: `Failed to get K-line data: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // UI K-lines
+    server.tool(
+        "get_ui_klines",
+        {
+            symbol: symbolSchema.describe("Trading pair symbol, e.g. BTCUSDT"),
+            interval: z.enum(["1m", "3m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "3d", "1w", "1M"])
+                .describe("K-line interval"),
+            startTime: timestampSchema.optional().describe("Start timestamp (milliseconds)"),
+            endTime: timestampSchema.optional().describe("End timestamp (milliseconds)"),
+            timeZone: z.string().optional().describe("Time zone, default UTC"),
+            limit: limitSchema.max(1000).optional().describe("Number of K-lines to return, default 500, max 1000")
+        },
+        async (args: { symbol: string; interval: string; startTime?: number; endTime?: number; timeZone?: string; limit?: number }) => {
+            try {
+                const response = await axiosInstance.get(`/api/v3/uiKlines`, {
+                    params: {
+                        symbol: args.symbol,
+                        interval: args.interval,
+                        startTime: args.startTime,
+                        endTime: args.endTime,
+                        timeZone: args.timeZone,
+                        limit: Math.min(args.limit || 500, 1000)
+                    }
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get UI K-line data: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Average Price
+    server.tool(
+        "get_avg_price",
+        {
+            symbol: symbolSchema.describe("Trading pair symbol, e.g. BTCUSDT")
+        },
+        async (args: { symbol: string }) => {
+            try {
+                const response = await axiosInstance.get(`/api/v3/avgPrice`, {
+                    params: {
+                        symbol: args.symbol
+                    }
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get average price: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // 24hr Ticker
+    server.tool(
+        "get_24hr_ticker",
+        {
+            symbol: symbolSchema.optional().describe("Trading pair symbol, e.g. BTCUSDT"),
+            symbols: z.array(symbolSchema).optional().describe("Array of multiple trading pair symbols"),
+            type: z.enum(["FULL", "MINI"]).optional().describe("Ticker type, default FULL")
+        },
+        async (args: { symbol?: string; symbols?: string[]; type?: string }) => {
+            try {
+                if (args.symbol && args.symbols) {
+                    throw new Error("Provide either symbol or symbols, not both");
+                }
+                
+                let params: any = { type: args.type || "FULL" };
+                if (args.symbol) {
+                    params.symbol = args.symbol;
+                } else if (args.symbols) {
+                    params.symbols = JSON.stringify(args.symbols);
+                }
+
+                const response = await axiosInstance.get(`/api/v3/ticker/24hr`, {
+                    params
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get 24hr ticker: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Trading Day Ticker
+    server.tool(
+        "get_trading_day_ticker",
+        {
+            symbol: symbolSchema.optional().describe("Trading pair symbol, e.g. BTCUSDT"),
+            symbols: z.array(symbolSchema).optional().describe("Array of multiple trading pair symbols"),
+            timeZone: z.string().optional().describe("Time zone, default UTC"),
+            type: z.enum(["FULL", "MINI"]).optional().describe("Ticker type, default FULL")
+        },
+        async (args: { symbol?: string; symbols?: string[]; timeZone?: string; type?: string }) => {
+            try {
+                if (args.symbol && args.symbols) {
+                    throw new Error("Provide either symbol or symbols, not both");
+                }
+                
+                let params: any = { 
+                    timeZone: args.timeZone || "UTC",
+                    type: args.type || "FULL"
+                };
+                if (args.symbol) {
+                    params.symbol = args.symbol;
+                } else if (args.symbols) {
+                    params.symbols = JSON.stringify(args.symbols);
+                }
+
+                const response = await axiosInstance.get(`/api/v3/ticker/tradingDay`, {
+                    params
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get trading day ticker: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Price Ticker
+    server.tool(
+        "get_price",
+        {
+            symbol: symbolSchema.optional().describe("Trading pair symbol, e.g. BTCUSDT"),
+            symbols: z.array(symbolSchema).optional().describe("Array of multiple trading pair symbols")
+        },
+        async (args: { symbol?: string; symbols?: string[] }) => {
+            try {
+                if (args.symbol && args.symbols) {
+                    throw new Error("Provide either symbol or symbols, not both");
+                }
+                
+                let params = {};
+                if (args.symbol) {
+                    params = { symbol: args.symbol };
+                } else if (args.symbols) {
+                    params = { symbols: JSON.stringify(args.symbols) };
+                }
+
+                const response = await axiosInstance.get(`/api/v3/ticker/price`, {
+                    params
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get price ticker: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Book Ticker
+    server.tool(
+        "get_book_ticker",
+        {
+            symbol: symbolSchema.optional().describe("Trading pair symbol, e.g. BTCUSDT"),
+            symbols: z.array(symbolSchema).optional().describe("Array of multiple trading pair symbols")
+        },
+        async (args: { symbol?: string; symbols?: string[] }) => {
+            try {
+                if (args.symbol && args.symbols) {
+                    throw new Error("Provide either symbol or symbols, not both");
+                }
+                
+                let params = {};
+                if (args.symbol) {
+                    params = { symbol: args.symbol };
+                } else if (args.symbols) {
+                    params = { symbols: JSON.stringify(args.symbols) };
+                }
+
+                const response = await axiosInstance.get(`/api/v3/ticker/bookTicker`, {
+                    params
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get book ticker: ${sanitizeError(error)}` }],
+                    isError: true
+                };
+            }
+        }
+    );
+
+    // Rolling Window Ticker
+    server.tool(
+        "get_rolling_window_ticker",
+        {
+            symbol: symbolSchema.optional().describe("Trading pair symbol, e.g. BTCUSDT"),
+            symbols: z.array(symbolSchema).optional().describe("Array of multiple trading pair symbols"),
+            windowSize: z.enum(["1m", "2m", "5m", "15m", "30m", "1h", "2h", "4h", "6h", "8h", "12h", "1d", "2d", "3d", "7d", "30d"]).optional().describe("Window size, default 1d"),
+            type: z.enum(["FULL", "MINI"]).optional().describe("Ticker type, default FULL")
+        },
+        async (args: { symbol?: string; symbols?: string[]; windowSize?: string; type?: string }) => {
+            try {
+                if (args.symbol && args.symbols) {
+                    throw new Error("Provide either symbol or symbols, not both");
+                }
+                
+                let params: any = { 
+                    windowSize: args.windowSize || "1d",
+                    type: args.type || "FULL"
+                };
+                if (args.symbol) {
+                    params.symbol = args.symbol;
+                } else if (args.symbols) {
+                    params.symbols = JSON.stringify(args.symbols);
+                }
+
+                const response = await axiosInstance.get(`/api/v3/ticker`, {
+                    params
+                });
+                return {
+                    content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }]
+                };
+            } catch (error: any) {
+                return {
+                    content: [{ type: "text", text: `Failed to get rolling window ticker: ${sanitizeError(error)}` }],
                     isError: true
                 };
             }
